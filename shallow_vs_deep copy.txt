@@ -1,0 +1,2 @@
+- Shallow copy: one level deep, only references of nested child object
+- deep copy: full independent copy
