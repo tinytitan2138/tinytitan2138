@@ -1,0 +1,31 @@
+- Objective: Create a program that generates workout routines based on user input
+
+- Workout Routine: workout routines are structured or scheduled plans to workout, they can range from person to person
+one person may be old and feeble and may need a workout routine that is less intense as someone who is young and
+in shape.
+
+- Attributes: workout routines may have type of workouts, such as deadlifts, squats, benchpress ect depending on input,
+if someone who is 70 is using the program, obviously it wouldnt put such excersizes. Workouts also have sets and reps
+per set, and rest time, number of each may depend on the intensity.
+
+- Frame: The program will need data, like age, goals; are they training for mass, to lose weight, ect, and gender.
+
+- brainstorm: the program will need data from user input, this is done through input, using the multiple inputs, it
+will analyze the data to determine a workout routine. An output for sets and reps will be dependant on a specification,
+intensity, intensity will be dependant on age, gender, and goal. The least intense would be for old woman looking to
+gain muscular mass, the most intense would be for young men looking to bulk up. An output for type of excersize will be
+dependant on age and goal, old people looking to bulk wouldnt be allowed to do deadlifts, though theyll be allowed to do
+curls, but only with lighter weight.
+
+- Range of output: The allowed types of excersizes are deadlifts, squats, benchpress, shoulder presses, pushups, curls,
+core excersizes, boxing, and running/jogging. The allowed schedule would be from monday to sunday. The allowed
+intensities would be 0 for above 70 or below 12, very low for 12 - 16 and 50 to 70, intermediate for 17 to 25 and 35 to 50
+and intense for 25 to 35.
+
+- Execution: i'll start with a list of questions, I need age, gender, and goal. if age is in between 0 and 10 or if age is
+higher than 70, the program will need to output that they cant workout. I can probably accomplish this with an if statement
+if answer 1 is in between some interval, or perhaps can be part of some list. if age is in between 12 and 15 or in between
+50 and 70 low intensity will be true, if low intensity is true, a set method will activate for a previously established
+attribute. if age is in between 15 and 25 or in between 35 to 50 intermediate attributes will be true. Bassicly the
+code will be nothing but if statements.
+
