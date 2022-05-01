@@ -1,0 +1,27 @@
+import sqlite3
+
+connection = sqlite3.connect('somename.db')
+
+cursor = connection.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOTE EXISTS name (
+    dataname datatype,
+)
+""")
+
+cursor.execute("""
+INSERT INTO name VALUES
+(data passed in as tuples)
+""")
+
+cursor.execute(""""
+SELECT * FROM name
+WHERE attribute = condtion
+""")
+
+rows = cursor.fetchall()
+print(rows)
+connection.commit()  the commit function is the thing that applies the code to the database
+connection.close()
+
