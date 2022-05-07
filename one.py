@@ -1,164 +1,63 @@
-# Dunder referes to double underscore such as __init__
-from queue import Queue as q
-import inspect
-import math
-import time
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
 
-    def __del__(self):
-        print('Object deleted')
+data = keras.datasets.fashion_mnist
 
+# 80 to 90 percent of data given for training, the rest is testing
+# all images are arrays of 28x28 pixels
+(train_images, train_labels), (test_images, test_labels) = data.load_data()
 
-class Vector:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
+               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
-    def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y)
-
-    def __repr__(self):
-        return f"X: {self.x}, Y: {self.y}"
-
-    def __len__(self):
-        return int(math.sqrt(self.x**2 + self.y**2))
-
-    def __call__(self, *args, **kwargs):
-        print('Caller activated')
-
-p = Person('mike', 25)  # triggers init method need not call init method
-del p  # deletees object p dunder methods automatically called as class is referenced
-
-v1 = Vector(10, 20)
-v2 = Vector(50, 60)
-v3 = v1 + v2
-print(f"the elements are {v3.x}, {v3.y}")  # may add in division and multiplaction methods
-print(v3)
-print(len(v3))
-v3()
+train_images = train_images/255.0
+test_images = test_images/255.0
+# representation is now from 0 to 1 instead of 0 to 255, makes data easier to work with
 
 
-def mydecorater(func):
-    def wrapper(*args, **kwargs):
-        print('start')
-        func(*args, **kwargs)
+# print(train_labels[0])
 
-        print('end')
-        val = func(*args, **kwargs)
-        return val
+#plt.imshow(train_images[0], cmap=plt.cm.binary)
+#plt.show()
 
-    return wrapper
-
-@mydecorater
-def helloworld():
-    print('hello world')
-
-# mydecorater(helloworld)()
-
-# helloworld()
-
-@mydecorater
-def greeting(name):
-    print(f"hello, {name}")
-    return name.upper()
-
-
-print(greeting("solomon"))
-
-# logging
-def logged(func):
-    def wrapper(*args, **kwargs):
-        value = func(*args, **kwargs)
-        with open('logfile.txt', 'a+') as f:
-            fname = func.__name__
-            print(f"{fname} returned value {value}")
-            f.write(f"{fname} returned value {value}\n")
-        return value
-    return wrapper
-
-@logged
-def add(x, y):
-    return x + y
-
-print(add(2, 3))
-
-def timed(func):
-    def wrapper(*args, **kwargs):
-        before = time.time()
-        value = func(*args, **kwargs)
-        after = time.time()
-        fname = func.__name__
-        print(f"{fname} took {after-before} seconds to execute")
-        return value
-    return wrapper
-
-@timed
-def myfunction(x):
-    result = 1
-    for i in range(x):
-        result *= i
-    return result
-
-
-myfunction(10000)
-# useful decorater for measuring performence
-
-# seq 1 to 9,000,000
-def mygen(x):
-    for i in range(x):
-        yield x**2
-
-test = mygen(100)
-limit = 0
-for i in test:
-    limit = limit + i
-    print(limit)
-
-a = [1, 2, 3]
-b = [4, 5]
-print(a + b)
-print(len(a))
-# datatypes like lists are actually objects
-
-class Human:
-    def __init__(self, name):
-        self.name = name
-    def __repr__(self):
-        return f"Human({self.name})"
-    def __mul__(self, x):
-        if type(x) is not int:
-            raise Exception("No int")
-        self.name = self.name * x
-    def __call__(self, y):
-        print("called this function", y)
-    def __len__(self):
-        return len(self.name)
+# model keras sequential allows for the archictexure to be made, as a sequence, thus is sequential
+# Flatten alows for the input shape, 28, 28 allows for 28 x 28 = 784 nuerons
+# Dense layer, contains nuerons all interconnected, just like the models drawn, activation is activation function
+# softmax allows for probability of 1 or 0 for choice of output
 
 
 
-person1 = Human('Solomon')
-print(person1)  # memory address location if no __repr__ method
-person1 * 3
-print(person1)
-person1(1)  # calls the call method
-print(len(person1))  # outputs 21 because name was multiplied by 3 via the __mul__ dunder method
 
-q = q()
-print(q)
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28, 28)),
+    keras.layers.Dense(128, activation="relu"),
+    keras.layers.Dense(10, activation="softmax")
+])
 
-#print(inspect.getsource(q))
+model.compile(optimizer="adam", loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=["accuracy"])
+# metrics define that we look at accuracy, to get loss function to 0
+model.fit(train_images, train_labels, epochs=5)
+# epoch is training iteration, that change order of input to further optimize
+# most of the keyword arguments are to be tweaked
 
-class Queue(q):
-    def __repr__(self):
-        return f"Queue({self._qsize()})"
-    def __add__(self, item):
-        self.put(item)
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+
+print("Tested Acc: ", test_acc)
+
+prediction = model.predict([test_images])
+
+for i in range(5):
+    plt.grid(False)
+    plt.imshow(test_images[i], cmap=plt.cm.binary)
+    plt.xlabel("Actual: " + class_names[test_labels[i]])
+    plt.title("Prediction: " + class_names[np.argmax(prediction[i])])
+    plt.show()
 
 
-qu = Queue()
-qu + 3
-print(qu)
-print('Testing')
+
+#print(class_names[np.argmax(prediction[0])])
+# outputs 10 different values, due to 10 output nuerons
+# prediction gives 10 probabilities, np.argmax returns index with highest probability
+# class_names[i] gives the i'th elements, which is prediction
